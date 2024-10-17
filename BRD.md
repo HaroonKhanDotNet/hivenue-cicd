@@ -3,8 +3,9 @@
 
 #
 ### Hivenue:
-- **`CEO` Nassim Bahloul**
-- **`CTO` Louenas Hamdi**
+- **Nassim Bahloul `CEO`**
+- **Louenas Hamdi `CTO`**
+- **Hanson Liang `Lead Developer`**
 
 ### BTC6:
 - **Alejandro Castellanos** (He/His/Him)
