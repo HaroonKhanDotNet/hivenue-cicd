@@ -2,12 +2,14 @@
 **Note:** This is a *Business Requirement Document* (**BRD**) which is a *Work in Progress* (**WIP**) and will serve as a *Service Level Agreement* (**SLA**) between ***Hivenue*** and ***BTC6*** (Beyond The Cloud Team #06).
 
 #
-### Hivenue `PoC`: CTO
+### Hivenue:
+- **`CEO` Nassim Bahloul**
+- **`CTO` Louenas Hamdi**
 
 ### BTC6:
-- **Alejandro Castellanos `PoC`** (He/His/Him)
+- **Alejandro Castellanos** (He/His/Him)
 - **Chima Annonye** (He/His/Him)
-- **Haroon Khan `PoC`** (He/His/Him)
+- **Haroon Khan** (He/His/Him)
 - **Jayme Liao** (She/Her)
 - **Mingxia Zeng** (She/Her)
 
@@ -15,6 +17,7 @@
 #### [Hivenue Riipen Pages - https://beyondthecloud.riipen.com/teams/QVdXDavV](https://beyondthecloud.riipen.com/teams/QVdXDavV)
 
 # Hivenue CI/CD
+![Hivenue CI/CD Pipeline](hivenue_cicd.svg)
 
 `Version: 1.0.0`
 
@@ -46,18 +49,18 @@ H --Approve <br> Deployment <br> Package/Image--> I;
 ```
 
 ### CI/CD Pipeline Milestones
-- **NDA** Signing-off
-- **Github** *Riipen branch* Creation and Access
-- **BRD** Approval
+- **BRD** Review, Feedback, Meeting and Approval
+- **NDA** Signing-off (Hivenue decision)
+- **Github** *Riipen branch* Creation and Access (or Hivenue Github separate CI/CD repository)
 - **Code Commit** *Event* to Riipen branch
-- **Github Workflow (IaC)** *Trigger*
+- **Github Workflow (IaC)** *Trigger* (Github Workflow permission)
     - **Continuous Integration**
-        1. **Code Build**
-        2. **Unit/Integration** (Whitebox) Testing
-        3. **Push Notification** (Build Pass/Fail)
+        1. **Code Build** (Hivenue Github Action)
+        2. **Unit/Integration** (Whitebox) Testing (Hivenue preferred e.g. Jasmine, Mocha, Jest)
+        3. **Push Notification** (Build Pass/Fail) (PoC's)
     - **Continuous Delivery**
-        1. **Staging** (AWS Hivenue Workload Deployment)
-        2. **End-to-End** (Blackbox) Testing
+        1. **Staging** (Hivenue AWS Workload Deployment access)
+        2. **End-to-End** (Blackbox) Testing (Hivenue preferred)
         3. **Push Noification** (Delivery Pass/Fail)
     - **Continuous Deployment**
         1. **Production** (Automate AWS Deployment)
@@ -65,8 +68,8 @@ H --Approve <br> Deployment <br> Package/Image--> I;
         3. **Push Notification** (Deployment Success/Awaiting Approval)
 
 ### Hivenue Deliverables
-1. **NDA** Document
-2. **BRD** Feeback and Approval
+1. **BRD** Review, Feeback and Approval
+2. **NDA** Document
 3. **Performance Metrics**
     - **MTTD** Mean Time to Detect
     - **MTTR** Mean Time to Repair (Time to Market/Production)
@@ -75,8 +78,7 @@ H --Approve <br> Deployment <br> Package/Image--> I;
     - **Uptime**
     - **TCO** Total Cost of Ownership (Manual Testing/Deployment)
 4. **Github** Riipen Branch Access
-5. **Unit/Integration** Test Codebase 
-    - Preffered Unit Testing Framework
+5. **Unit/Integration** Test Codebase
 6. **Github** Push Notification Access (PoC's)
 7. **Package vs Image** (Preferred Deployment Artifact)
 8. **AWS IaC** Staging Access
