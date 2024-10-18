@@ -1,7 +1,7 @@
 **Note:** This is a *Business Requirement Document* (**BRD**) which is a *Work in Progress* (**WIP**) and will serve as a *Service Level Agreement* (**SLA**) between ***Hivenue*** and ***BTC6*** (Beyond The Cloud Team #06).
 
 #
-# Hivenue CI/CD
+# Hivenue CI/CD Pipeline
 **[Riipen Pages - https://beyondthecloud.riipen.com/teams/QVdXDavV](https://beyondthecloud.riipen.com/teams/QVdXDavV)**
 
 `Version: 1.0.0`
@@ -25,7 +25,6 @@ Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline
 
 ![Hivenue CI/CD Pipeline](hivenue_cicd.svg)
 
-
 ### CI/CD Pipeline Workflow
 1. **Build** (Packaging with Dependencies)
 2. **Unit/Integration Testing** (Whitebox Testing)
@@ -41,7 +40,7 @@ A[Hivenue <br> Development <br> Environment] --Code <br> Commit--> B[Riipen <br>
 B --Code Build <br> Package--> C{Unit & Integration <br> Whitebox Testing};
 C --Fail--> D[Build Fail <br> Push Notification];
 C --Pass--> E[Build Pass <br> Push Notification];
-E --Staging <br> Delivery <br> Package/Image--> F{End-to-End <br> Blackbox Testing};
+E --AWS Staging <br> Delivery <br> Package/Image--> F{End-to-End <br> Blackbox Testing};
 F --Fail--> G[Delivery Fail <br> Push Notification];
 F --Pass--> H{Delivery Pass <br> Push Notification};
 H --Continuous <br> Deployment <br> Package/Image--> I[Production <br> Release];
@@ -50,7 +49,7 @@ H --Approve <br> Deployment <br> Package/Image--> I;
 
 ### CI/CD Pipeline Milestones
 - **BRD** Review, Feedback, Meeting and Approval
-- **NDA** Signing-off (Hivenue decision)
+- **NDA** Signing-off (Hivenue discretion)
 - **Github** *Riipen branch* Creation and Access (or Hivenue Github separate CI/CD repository)
 - **Code Commit** *Event* to Riipen branch
 - **Github Workflow (IaC)** *Trigger* (Github Workflow permission)
@@ -63,7 +62,7 @@ H --Approve <br> Deployment <br> Package/Image--> I;
         2. **End-to-End** (Blackbox) Testing (Hivenue preferred)
         3. **Push Noification** (Delivery Pass/Fail)
     - **Continuous Deployment**
-        1. **Production** (Automate AWS Deployment)
+        1. **Production** (Automate AWS Deployment - Hot Swap)
         2. **Production** (Awaiting Approval AWS DEployment)
         3. **Push Notification** (Deployment Success/Awaiting Approval)
 
