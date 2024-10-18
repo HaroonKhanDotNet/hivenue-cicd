@@ -1,31 +1,30 @@
-
 **Note:** This is a *Business Requirement Document* (**BRD**) which is a *Work in Progress* (**WIP**) and will serve as a *Service Level Agreement* (**SLA**) between ***Hivenue*** and ***BTC6*** (Beyond The Cloud Team #06).
 
 #
-### Hivenue:
+# Hivenue CI/CD
+**[Riipen Pages - https://beyondthecloud.riipen.com/teams/QVdXDavV](https://beyondthecloud.riipen.com/teams/QVdXDavV)**
+
+`Version: 1.0.0`
+
+`Project Kick-off: Tue 2024 Oct 15 | 60Hrs. per 6 Weeks`
+
+### Hivenue
 - **Nassim Bahloul `CEO`**
 - **Louenas Hamdi `CTO`**
 - **Hanson Liang `Lead Developer`**
 
-### BTC6:
+### BTC6
 - **Alejandro Castellanos** (He/His/Him)
 - **Chima Annonye** (He/His/Him)
 - **Haroon Khan** (He/His/Him)
 - **Jayme Liao** (She/Her)
 - **Mingxia Zeng** (She/Her)
 
-#
-#### [Hivenue Riipen Pages - https://beyondthecloud.riipen.com/teams/QVdXDavV](https://beyondthecloud.riipen.com/teams/QVdXDavV)
-
-# Hivenue CI/CD
-![Hivenue CI/CD Pipeline](hivenue_cicd.svg)
-
-`Version: 1.0.0`
-
-`Project Kick-off: Tue 2024 Oct 15 | 60Hrs. per 6 Weeks`
-
 ## Requirement:
 Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline*** to *automate* production deployment.
+
+![Hivenue CI/CD Pipeline](hivenue_cicd.svg)
+
 
 ### CI/CD Pipeline Workflow
 1. **Build** (Packaging with Dependencies)
