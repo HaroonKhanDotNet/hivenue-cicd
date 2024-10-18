@@ -45,6 +45,7 @@ F --Fail--> G[Delivery Fail <br> Push Notification];
 F --Pass--> H{Delivery Pass <br> Push Notification};
 H --Continuous <br> Deployment <br> Package/Image--> I[Production <br> Release];
 H --Approve <br> Deployment <br> Package/Image--> I;
+I --> J[Deployment Success <br> Push Notification]
 ```
 
 ### CI/CD Pipeline Milestones
