@@ -17,6 +17,8 @@ ___
 ## Requirement:
 Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline*** to *automate* production deployment.
 
+For more information: [BRD](BRD.md)
+
 ### Hivenue Workflow (Current)
 
 1. `Github Organization` Hivenue codebase is `private` on Github.
@@ -86,7 +88,7 @@ Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline
 
 #### Phase-3
 1. `Riipen Production` Hivenue will spin-up clone production servers
-2. `Blue-Green/Canary Deployment Strategy` Hivenue will provide configuration or access to DigitalOcean to a suitable deployment strategy
+2. `Blue-Green/Canary Deployment` Hivenue will provide configuration or access to DigitalOcean to a suitable deployment strategy
     - Traffic can be diverted slowly and gradually to the new poduction servers (blue) in order to test them live
     - green (old production) can be phased out once all traffic is diverted successfully over a certian period without any CI/CD issue
 3. `monitor` Hivenue and BTC6 will monitor the performance parameters to record in the final report
