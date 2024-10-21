@@ -4,21 +4,16 @@
 # Hivenue CI/CD Pipeline
 **[Riipen Pages - https://beyondthecloud.riipen.com/teams/QVdXDavV](https://beyondthecloud.riipen.com/teams/QVdXDavV)**
 
-`Version: 1.0.0`
+`Version: 1.1.0`
 
-`Project Kick-off: Tue 2024 Oct 15 | 60Hrs. per 6 Weeks`
+`Project Kick-off: 2024 Oct 15 Tue | 60Hrs. per 6 Weeks`
 
-### Hivenue
-- **Nassim Bahloul `CEO`**
-- **Louenas Hamdi `CTO`**
-- **Hanson Liang `Lead Developer`**
-
-### BTC6
-- **Alejandro Castellanos** (He/His/Him)
-- **Chima Annonye** (He/His/Him)
-- **Haroon Khan** (He/His/Him)
-- **Jayme Liao** (She/Her)
-- **Mingxia Zeng** (She/Her)
+| Hivenue                       | BTC6                  |
+|-------------------------------|-----------------------|
+| Nassim Bahloul `CEO`          | Alejandro Castellanos |
+| Louenas Hamdi `CTO`           | Jayme Liao            |
+| Hanson Liang `Lead Developer` | Haroon Khan           |
+|                               | Chima Annonye         |
 
 ## Requirement:
 Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline*** to *automate* production deployment.
@@ -37,10 +32,10 @@ Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline
 ```mermaid
 flowchart TD;
 A[Hivenue <br> Development <br> Environment] --Code <br> Commit--> B[Riipen <br> Branch];
-B --Code Build <br> Package--> C{Unit & Integration <br> Whitebox Testing};
+B --Code Build <br> Package--> C{Unit & Integration <br> Jasmine/Jest Testing};
 C --Fail--> D[Build Fail <br> Push Notification];
 C --Pass--> E[Build Pass <br> Push Notification];
-E --AWS Staging <br> Delivery <br> Package/Image--> F{End-to-End <br> Blackbox Testing};
+E --DigitalOcean <br> Staging <br> Package/Image--> F{End-to-End <br> Playwright Testing};
 F --Fail--> G[Delivery Fail <br> Push Notification];
 F --Pass--> H{Delivery Pass <br> Push Notification};
 H --Continuous <br> Deployment <br> Package/Image--> I[Production <br> Release];
@@ -51,20 +46,20 @@ I --> J[Deployment Success <br> Push Notification]
 ### CI/CD Pipeline Milestones
 - **BRD** Review, Feedback, Meeting and Approval
 - **NDA** Signing-off (Hivenue discretion)
-- **Github** *Riipen branch* Creation and Access (or Hivenue Github separate CI/CD repository)
+- **Github** *Riipen branch* Creation and Access
 - **Code Commit** *Event* to Riipen branch
 - **Github Workflow (IaC)** *Trigger* (Github Workflow permission)
     - **Continuous Integration**
         1. **Code Build** (Hivenue Github Action)
-        2. **Unit/Integration** (Whitebox) Testing (Hivenue preferred e.g. Jasmine, Mocha, Jest)
+        2. **Unit/Integration** (Whitebox) Testing (Jest/Jasmine)
         3. **Push Notification** (Build Pass/Fail) (PoC's)
     - **Continuous Delivery**
-        1. **Staging** (Hivenue AWS Workload Deployment access)
-        2. **End-to-End** (Blackbox) Testing (Hivenue preferred)
+        1. **Staging** (Hivenue DigitalOcean Workload Deployment Role)
+        2. **End-to-End** (Blackbox) Testing (Playwright)
         3. **Push Noification** (Delivery Pass/Fail)
     - **Continuous Deployment**
-        1. **Production** (Automate AWS Deployment - Hot Swap)
-        2. **Production** (Awaiting Approval AWS DEployment)
+        1. **Production** (Automate DigitalOcean Deployment)
+        2. **Production** (Awaiting Approval DigitalOcean DEployment)
         3. **Push Notification** (Deployment Success/Awaiting Approval)
 
 ### Hivenue Deliverables
@@ -81,10 +76,10 @@ I --> J[Deployment Success <br> Push Notification]
 5. **Unit/Integration** Test Codebase
 6. **Github** Push Notification Access (PoC's)
 7. **Package vs Image** (Preferred Deployment Artifact)
-8. **AWS IaC** Staging Access
+8. **DigitalOcean IaC** Staging Access
 9. **End-to-End** Test Case Documentation
     - Preffered Test Automation Framework (e.g. Selenium, Cucumber)
-10. **AWS IaC** Production Access
+10. **DigitalOcean IaC** Production Access
 
 ### BTC6 Deliverables
 1. **CI/CD IaC** (Infrastructure as Code)

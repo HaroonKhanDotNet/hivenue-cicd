@@ -1,4 +1,4 @@
-**Note:** This is a Requirement Gathering Meeting Document between Hivenue and BTC6 and still a Work in Progress (WiP)
+**Note:** This is a Requirement Gathering Meeting Document between Hivenue and BTC6 and still a Work in Progress (WiP).
 
 #
 # Hivenue CI/CD Pipeline
@@ -17,13 +17,17 @@ ___
 ## Requirement:
 Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline*** to *automate* production deployment.
 
+![Hivenue CI/CD Pipeline](hivenue_cicd.svg)
+
 For more information: [BRD](BRD.md)
 
 ### Hivenue Workflow (Current)
 
 1. `Github Organization` Hivenue codebase is `private` on Github.
 2. `Build` Hivenue do Not build code on Github
-3. `Unit Test` Hivenue use `Jest` framework to unit/integration test on local development environment
+3. `Unit Test` Hivenue use `Jest` framework to unit/integration test on
+    - Local development environment
+    - Github Action
 4. `Commit` Hivenue commit code on Github branch only after passing the local unit/integration test
     - `back-end` containing Express/MongoDB codebase
     - `front-end` containing Angular codebase
