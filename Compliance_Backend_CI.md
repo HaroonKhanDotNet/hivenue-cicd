@@ -28,13 +28,13 @@ Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline
 [SNYK Static Application Security Test *SAST* Results](https://app.snyk.io/org/wemoove/project/6ab34e65-d9bc-450d-92b5-918771bc86c7)
 <br/>SNYK free account only allows limited testing through their console. Also, in free account we cannot create the token to run from Github.
 
-```
+```js
 npm i
 npm WARN deprecated phantomjs-prebuilt@2.1.16: this package is now deprecated
-npm *WARN deprecated html-pdf@3.0.1: Please migrate your projects to a newer library like puppeteer
+npm WARN deprecated html-pdf@3.0.1: Please migrate your projects to a newer library like puppeteer
 ```
 
-```
+```js
 npm audit (npm-audit.json)
 The audit command submits a description of the dependencies configured in your project to your default registry and asks for a report of known vulnerabilities. If any vulnerabilities are found, then the impact and appropriate remediation will be calculated.
 
@@ -53,7 +53,7 @@ To address issues that do not require attention, run: npm audit fix
 To address all issues possible (including breaking changes), run: npm audit fix --force
 ```
 
-```
+```js
 npx dotenv-linter
 npm WARN exec The following package was not found and will be installed: dotenv-linter@0.2.0
 node:internal/fs/utils:348
@@ -78,66 +78,66 @@ Error: ENOENT: no such file or directory, open 'always'
 }
 ```
 
-```
+```js
 npx jsonlint package.json (jsonlint-package.json)
 npm WARN exec The following package was not found and will be installed: jsonlint@1.6.3
 npm WARN deprecated nomnom@1.8.1: Package no longer supported. Contact support@npmjs.com for more info.
 ```
 
-```
+```js
 npx jsonlint package-lock.json (jsonlint-package-lock.json)
 ```
 
-```
+```js
 npx package-locks-checks
-npm *WARN exec The following package was not found and will be installed: package-locks-checks@0.0.8
-npm *WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
-npm *WARN deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
-npm *WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm WARN exec The following package was not found and will be installed: package-locks-checks@0.0.8
+npm WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm WARN deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
 ```
 
-```
+```js
 npx quality
-npm *WARN exec The following package was not found and will be installed: quality@1.0.5
-npm *WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
-npm *WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
-npm *WARN deprecated glob@5.0.15: Glob versions prior to v9 are no longer supported
-npm *WARN deprecated glob@5.0.15: Glob versions prior to v9 are no longer supported
-npm *WARN deprecated stable@0.1.8: Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated. See the compatibility table on MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#browser_compatibility
-npm *WARN deprecated q@1.5.1: You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-npm *WARN deprecated 
-npm *WARN deprecated (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
-npm *WARN deprecated try-resolve@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-remove-console@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-undefined-to-void@1.1.6: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-remove-debugger@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-proto-to-assign@1.0.4: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-member-expression-literals@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-inline-environment-variables@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-react-display-name@1.0.3: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-runtime@1.0.7: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-property-literals@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-react-constant-elements@1.0.3: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-dead-code-elimination@1.0.2: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-constant-folding@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-jscript@1.0.4: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated babel-plugin-eval@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-npm *WARN deprecated minimatch@2.0.10: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
-npm *WARN deprecated graceful-fs@2.0.3: please upgrade to graceful-fs 4 for compatibility with current and future versions of Node.js
-npm *WARN deprecated minimatch@0.2.14: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
-npm *WARN deprecated standard-format@1.6.10: standard-format is deprecated in favor of a built-in autofixer in 'standard'. Usage: standard --fix
-npm *WARN deprecated eslint@0.24.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
-npm *WARN deprecated core-js@1.2.7: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
-npm *WARN deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+npm WARN exec The following package was not found and will be installed: quality@1.0.5
+npm WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm WARN deprecated glob@5.0.15: Glob versions prior to v9 are no longer supported
+npm WARN deprecated glob@5.0.15: Glob versions prior to v9 are no longer supported
+npm WARN deprecated stable@0.1.8: Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated. See the compatibility table on MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#browser_compatibility
+npm WARN deprecated q@1.5.1: You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
+npm WARN deprecated 
+npm WARN deprecated (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
+npm WARN deprecated try-resolve@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-remove-console@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-undefined-to-void@1.1.6: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-remove-debugger@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-proto-to-assign@1.0.4: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-member-expression-literals@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-inline-environment-variables@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-react-display-name@1.0.3: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-runtime@1.0.7: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-property-literals@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-react-constant-elements@1.0.3: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-dead-code-elimination@1.0.2: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-constant-folding@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-jscript@1.0.4: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated babel-plugin-eval@1.0.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm WARN deprecated minimatch@2.0.10: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
+npm WARN deprecated graceful-fs@2.0.3: please upgrade to graceful-fs 4 for compatibility with current and future versions of Node.js
+npm WARN deprecated minimatch@0.2.14: Please update to minimatch 3.0.2 or higher to avoid a RegExp DoS issue
+npm WARN deprecated standard-format@1.6.10: standard-format is deprecated in favor of a built-in autofixer in 'standard'. Usage: standard --fix
+npm WARN deprecated eslint@0.24.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm WARN deprecated core-js@1.2.7: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+npm WARN deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
 /bin/sh: 1: /home/runner/.npm/_npx/3ff222c43633a144/node_modules/quality/node_modules/.bin/sanitycheck: not found
 ```
 
-```
+```js
 npx eslint . (eslint.json)
 look for "suppressedMessages"
 ```
 
-```
+```js
 npm run prettier:check
 [warn] eslint.json
 [warn] jsonlint-package-lock.json
@@ -167,15 +167,15 @@ Error:    5 | Checking formatting...
 Error: Process completed with exit code 2.
 ```
 
-```
+```js
 npx lint
 npm WARN exec The following package was not found and will be installed: lint@0.8.19
-npm *WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
-npm *WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
-npm *WARN deprecated har-validator@5.1.5: this library is no longer supported
-npm *WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
-npm *WARN deprecated loadash@1.0.0: Package is unsupport. Please use the lodash package instead.
-npm *WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+npm WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm WARN deprecated har-validator@5.1.5: this library is no longer supported
+npm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+npm WARN deprecated loadash@1.0.0: Package is unsupport. Please use the lodash package instead.
+npm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
 node:internal/modules/cjs/loader:998
   throw err;
   ^
@@ -202,7 +202,7 @@ Require stack:
 }
 ```
 
-```
+```js
 npm run prettier:lint
 Error:  npm-install.json: SyntaxError: Unexpected token (2:1)
 Error:    1 |
@@ -234,12 +234,12 @@ Error:    5 | eslint.json
 Error: Process completed with exit code 2.
 ```
 
-```
+```js
 npm run test
 Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
 ```
 
-```
+```js
 npm run test:coverage
 
 > wemoove@0.0.0 test:coverage
