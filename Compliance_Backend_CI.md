@@ -30,6 +30,11 @@ Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline
 
 ```js
 npm i
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'wemoove@0.0.0',
+npm warn EBADENGINE   required: { node: '18.12.0', npm: '8.19.2' },
+npm warn EBADENGINE   current: { node: 'v18.20.5', npm: '10.8.2' }
+npm warn EBADENGINE }
 npm WARN deprecated phantomjs-prebuilt@2.1.16: this package is now deprecated
 npm WARN deprecated html-pdf@3.0.1: Please migrate your projects to a newer library like puppeteer
 ```
