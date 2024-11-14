@@ -23,7 +23,7 @@ Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline
 1. **Build** (Code Integration with Dependencies)
 2. **Unit/Integration Testing** (Jest)
 
-[**Click to Download Hivenue Backend CI Reports**](https://github.com/Hivenue/riipen-backend/actions/runs/11789355640/artifacts/2174068220)
+[**Click to Download Hivenue Backend CI Reports**](https://github.com/Hivenue/riipen-backend/actions/runs/11845520777/artifacts/2190031529)
 
 [SNYK Static Application Security Test *SAST* Results](https://app.snyk.io/org/wemoove/project/6ab34e65-d9bc-450d-92b5-918771bc86c7)
 <br/>SNYK free account only allows limited testing through their console. Also, in free account we cannot create the token to run from Github.
