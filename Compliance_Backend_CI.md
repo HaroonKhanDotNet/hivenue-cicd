@@ -242,6 +242,136 @@ Error: Process completed with exit code 2.
 ```js
 npm run test
 Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
+
+Jest has detected the following 6 open handles potentially keeping Jest from exiting:
+  ●  Timeout
+      175 | };
+      176 |
+    > 177 | setInterval(deleteAllExpiredTokens, 3600 * 1000); // Delete expired tokens every hour
+          | ^
+      178 |
+      at Object.setInterval (controllers/auth.js:177:1)
+      at Object.require (tests/helper/scenarioBuilder.js:1:52)
+      at Object.require (tests/api/apartmentAPI.test.js:1:18)
+  ●  TCPWRAP
+      4 | require('dotenv').config();
+      5 |
+    > 6 | mongoose.connect(process.env.MONGOLAB_URI).catch((error) => {
+        |          ^
+      7 |     log.error('Unable to connect to database', error);
+      8 | });
+      9 |
+      at makeConnection (node_modules/mongodb/src/cmap/connect.ts:375:18)
+      at connect (node_modules/mongodb/src/cmap/connect.ts:55:3)
+      at checkServer (node_modules/mongodb/src/sdam/monitor.ts:304:10)
+      at MonitorInterval.fn (node_modules/mongodb/src/sdam/monitor.ts:348:5)
+      at MonitorInterval._executeAndReschedule (node_modules/mongodb/src/sdam/monitor.ts:589:10)
+      at new MonitorInterval (node_modules/mongodb/src/sdam/monitor.ts:506:12)
+      at Monitor.connect (node_modules/mongodb/src/sdam/monitor.ts:147:24)
+      at Server.connect (node_modules/mongodb/src/sdam/server.ts:236:23)
+      at createAndConnectServer (node_modules/mongodb/src/sdam/topology.ts:773:10)
+      at node_modules/mongodb/src/sdam/topology.ts:421:9
+          at Array.map (<anonymous>)
+      at Topology.connect (node_modules/mongodb/src/sdam/topology.ts:419:26)
+      at node_modules/mongodb/src/mongo_client.ts:486:52
+      at topologyConnect (node_modules/mongodb/src/mongo_client.ts:486:79)
+      at MongoClient._connect (node_modules/mongodb/src/mongo_client.ts:499:13)
+      at MongoClient.connect (node_modules/mongodb/src/mongo_client.ts:424:34)
+      at _createMongoClient (node_modules/mongoose/lib/connection.js:894:16)
+      at NativeConnection.openUri (node_modules/mongoose/lib/connection.js:741:29)
+      at Mongoose.connect (node_modules/mongoose/lib/index.js:404:15)
+      at Object.connect (db.js:6:10)
+      at Object.require (app.js:9:1)
+      at Object.require (tests/api/apartmentAPI.test.js:2:13)
+  ●  Timeout
+      175 | };
+      176 |
+    > 177 | setInterval(deleteAllExpiredTokens, 3600 * 1000); // Delete expired tokens every hour
+          | ^
+      178 |
+      at Object.setInterval (controllers/auth.js:177:1)
+      at Object.require (tests/helper/scenarioBuilder.js:1:52)
+      at Object.require (tests/api/adminAPI.test.js:1:18)
+  ●  TCPWRAP
+      4 | require('dotenv').config();
+      5 |
+    > 6 | mongoose.connect(process.env.MONGOLAB_URI).catch((error) => {
+        |          ^
+      7 |     log.error('Unable to connect to database', error);
+      8 | });
+      9 |
+      at makeConnection (node_modules/mongodb/src/cmap/connect.ts:375:18)
+      at connect (node_modules/mongodb/src/cmap/connect.ts:55:3)
+      at checkServer (node_modules/mongodb/src/sdam/monitor.ts:304:10)
+      at MonitorInterval.fn (node_modules/mongodb/src/sdam/monitor.ts:348:5)
+      at MonitorInterval._executeAndReschedule (node_modules/mongodb/src/sdam/monitor.ts:589:10)
+      at new MonitorInterval (node_modules/mongodb/src/sdam/monitor.ts:506:12)
+      at Monitor.connect (node_modules/mongodb/src/sdam/monitor.ts:147:24)
+      at Server.connect (node_modules/mongodb/src/sdam/server.ts:236:23)
+      at createAndConnectServer (node_modules/mongodb/src/sdam/topology.ts:773:10)
+      at node_modules/mongodb/src/sdam/topology.ts:421:9
+          at Array.map (<anonymous>)
+      at Topology.connect (node_modules/mongodb/src/sdam/topology.ts:419:26)
+      at node_modules/mongodb/src/mongo_client.ts:486:52
+      at topologyConnect (node_modules/mongodb/src/mongo_client.ts:486:79)
+      at MongoClient._connect (node_modules/mongodb/src/mongo_client.ts:499:13)
+      at MongoClient.connect (node_modules/mongodb/src/mongo_client.ts:424:34)
+      at _createMongoClient (node_modules/mongoose/lib/connection.js:894:16)
+      at NativeConnection.openUri (node_modules/mongoose/lib/connection.js:741:29)
+      at Mongoose.connect (node_modules/mongoose/lib/index.js:404:15)
+      at Object.connect (db.js:6:10)
+      at Object.require (app.js:9:1)
+      at Object.require (tests/api/adminAPI.test.js:2:13)
+  ●  Timeout
+      2331 | // |=================================================================================| \\
+      2332 |
+    > 2333 | const socket = io.connect(`${process.env.MATCHING_API}`);
+           |                   ^
+      2334 |
+      2335 | socket.on('connect', () => {
+      2336 |     console.log('connected to matching server.');
+      at XMLHttpRequest.send (node_modules/xmlhttprequest-ssl/lib/XMLHttpRequest.js:494:17)
+      at Request.create (node_modules/engine.io-client/build/cjs/transports/polling.js:330:17)
+      at new Request (node_modules/engine.io-client/build/cjs/transports/polling.js:272:14)
+      at Polling.request (node_modules/engine.io-client/build/cjs/transports/polling.js:222:16)
+      at Polling.doPoll (node_modules/engine.io-client/build/cjs/transports/polling.js:248:26)
+      at Polling.poll (node_modules/engine.io-client/build/cjs/transports/polling.js:109:14)
+      at Polling.doOpen (node_modules/engine.io-client/build/cjs/transports/polling.js:63:14)
+      at Polling.open (node_modules/engine.io-client/build/cjs/transport.js:53:14)
+      at Socket.open (node_modules/engine.io-client/build/cjs/socket.js:175:19)
+      at new Socket (node_modules/engine.io-client/build/cjs/socket.js:113:14)
+      at Manager.open (node_modules/socket.io-client/build/cjs/manager.js:137:23)
+      at new Manager (node_modules/socket.io-client/build/cjs/manager.js:66:18)
+      at Function.lookup (node_modules/socket.io-client/build/cjs/index.js:41:25)
+      at Object.connect (controllers/admin.js:2333:19)
+      at Object.require (routes/users.js:6:25)
+      at Object.require (app.js:12:15)
+      at Object.require (tests/api/apartmentAPI.test.js:2:13)
+  ●  Timeout
+      2331 | // |=================================================================================| \\
+      2332 |
+    > 2333 | const socket = io.connect(`${process.env.MATCHING_API}`);
+           |                   ^
+      2334 |
+      2335 | socket.on('connect', () => {
+      2336 |     console.log('connected to matching server.');
+      at XMLHttpRequest.send (node_modules/xmlhttprequest-ssl/lib/XMLHttpRequest.js:494:17)
+      at Request.create (node_modules/engine.io-client/build/cjs/transports/polling.js:330:17)
+      at new Request (node_modules/engine.io-client/build/cjs/transports/polling.js:272:14)
+      at Polling.request (node_modules/engine.io-client/build/cjs/transports/polling.js:222:16)
+      at Polling.doPoll (node_modules/engine.io-client/build/cjs/transports/polling.js:248:26)
+      at Polling.poll (node_modules/engine.io-client/build/cjs/transports/polling.js:109:14)
+      at Polling.doOpen (node_modules/engine.io-client/build/cjs/transports/polling.js:63:14)
+      at Polling.open (node_modules/engine.io-client/build/cjs/transport.js:53:14)
+      at Socket.open (node_modules/engine.io-client/build/cjs/socket.js:175:19)
+      at new Socket (node_modules/engine.io-client/build/cjs/socket.js:113:14)
+      at Manager.open (node_modules/socket.io-client/build/cjs/manager.js:137:23)
+      at new Manager (node_modules/socket.io-client/build/cjs/manager.js:66:18)
+      at Function.lookup (node_modules/socket.io-client/build/cjs/index.js:41:25)
+      at Object.connect (controllers/admin.js:2333:19)
+      at Object.require (routes/users.js:6:25)
+      at Object.require (app.js:12:15)
+      at Object.require (tests/api/adminAPI.test.js:2:13)
 ```
 
 ```js
