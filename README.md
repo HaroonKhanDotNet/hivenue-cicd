@@ -57,8 +57,8 @@ Hivenue need to integrate ***Development Environment*** with a ***CI/CD Pipeline
     - `package.json` Containing test:coverage script and renewed lint script
     - `BRD.md` Business Requirement Document
     - `README.md`
-  - e2e Playwright Project
-  - nginx configuration file
+  - e2e Playwright Project https://github.com/HaroonKhanDotNet/hivenue-cicd/tree/main/e2e-playwright
+  - nginx configuration file https://github.com/HaroonKhanDotNet/hivenue-cicd/tree/main/webserver-loadbalancer
 
 ### `package.json`
     ```js
