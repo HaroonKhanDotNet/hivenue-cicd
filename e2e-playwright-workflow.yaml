@@ -1,0 +1,343 @@
+####################################################
+#                                                  #
+#   Project: CI/CD Pipeline                        #
+#   Phase III: e2e Testing                         #
+#   Module: e2e-playwright                         #
+#   Tech: Github Actions                           #
+#   Client: Hivenue.ca (Nassim, Louenas, Hanson)   #
+#   Author: BTC6 (Alejandro, Jayme, Haroon)        #
+#   Referees: Riipen.com and ICTC BTC              #
+#   Last Update: Sun 2024 Dec 01                   #
+#                                                  #
+####################################################
+
+name: e2e-playwright-workflow.yaml
+
+on:
+  repository_dispatch:  # callable by github api with permission token 
+    types:
+      - CD-backend-workflow.yaml  # CD-backend-workflow can call this workflow with permission token
+      
+  workflow_dispatch:   # Manual trigger, later we will add push/pull_request event triggers on riipen-backend branch.
+  push:  # This event trigger the workflow when new commits are pushed to a branch, including after a merge.
+  pull_request:  # run in the source branch context but simulate a merge-commit on the target branch to test or validate the future state of the codebase after the merge happens
+    types:  # by default pull request trigger upon opened, synchronize or reopened PR's
+      - opened  # triggered when a new pull request is created
+      - synchronize  # triggered when commits are added, removed, or updated in the source branch of an open pull request
+      - reopened  # triggered whenever a pull-request is reopened
+
+jobs:
+
+  e2e_playwright_job:
+    name: e2e playwright job
+    
+    # matrix strategy
+    strategy:
+      matrix:
+        os: 
+          - ubuntu-latest
+          # - windows-latest
+          # - macos-latest
+
+    runs-on: ${{ matrix.os }}
+      
+    steps:
+
+      ###### Project Quality Check
+
+      - name: notification init
+        run: | 
+          echo "notify_sign=':white_check_mark:'" >> $GITHUB_ENV
+          echo "notify_fail=':'" >> $GITHUB_ENV
+          echo "notify_pass=':'" >> $GITHUB_ENV
+
+      - name: is PR mergeable
+        id: pr_mergeable
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.event.pull_request.mergeable }}" == "null" ]; then
+            pr_msg='Error: unknown merge status - trigger workflow again'
+            echo "notify_sign=':x:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$pr_msg" >> $GITHUB_ENV
+            
+            echo "$pr_msg"
+            exit 1
+          fi
+
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.event.pull_request.mergeable }}" == "false" ]; then
+            pr_msg='Error: merge conflict - the PR is not mergeable'
+            echo "notify_sign=':x:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$pr_msg" >> $GITHUB_ENV
+
+            echo "$pr_msg"
+            exit 1
+          fi
+
+      - name: checkout e2e-playwright
+        uses: actions/checkout@v4
+
+      - name: get commit message
+        run: echo "last_commit=$(git log -1 --pretty=%B | tr '\n' ' ' | sed 's/[\r]//g; s/%/%%/g; s/["]/\\"/g; s/\n/\\n/g')" >> $GITHUB_ENV
+  
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      - name: audit project
+        continue-on-error: true
+        run: |
+          if [ "${{ github.event_name }}" != "repository_dispatch" ]; then
+            set -e
+            
+            npm audit 2>&1 | tee audit.txt
+            exit_code=${PIPESTATUS[0]}
+            audit_msg='audit(audit.md)'
+
+            if [ $exit_code -ne 0 ]; then
+              echo '`FAIL`' >> audit.md
+              echo "notify_sign=':warning:'" >> $GITHUB_ENV
+              echo "notify_fail=$notify_fail:$audit_msg" >> $GITHUB_ENV  
+            else
+              echo '`PASS`' >> audit.md
+              echo "notify_pass=$notify_pass:$audit_msg" >> $GITHUB_ENV
+            fi
+          
+            echo "$audit_msg" >> audit.md
+            echo '```js' >> audit.md
+            cat audit.txt >> audit.md
+            echo '```' >> audit.md
+
+            echo $exit_code:$audit_msg
+            exit $exit_code
+          
+            set +e
+          fi
+
+      - name: unused dependencies
+        continue-on-error: true
+        run: |
+          if [ "${{ github.event_name }}" != "repository_dispatch" ]; then
+            set -e
+            
+            npx depcheck 2>&1 | tee depcheck.txt
+            exit_code=${PIPESTATUS[0]}
+            depcheck_msg='depcheck(depcheck.md)'
+
+            if [ $exit_code -ne 0 ]; then
+              echo '`FAIL`' >> depcheck.md
+              echo "notify_sign=':warning:'" >> $GITHUB_ENV
+              echo "notify_fail=$notify_fail:$depcheck_msg" >> $GITHUB_ENV  
+            else
+              echo '`PASS`' >> depcheck.md
+              echo "notify_pass=$notify_pass:$depcheck_msg" >> $GITHUB_ENV
+            fi
+          
+            echo "$depcheck_msg" >> depcheck.md
+            echo '```js' >> depcheck.md
+            cat depcheck.txt >> depcheck.md
+            echo '```' >> depcheck.md
+
+            echo $exit_code:$depcheck_msg
+            exit $exit_code
+          
+            set +e
+          fi
+
+      - name: eslint project
+        continue-on-error: true
+        run: |
+          if [ "${{ github.event_name }}" != "repository_dispatch" ]; then
+            set -e
+            
+            npx eslint . 2>&1 | tee eslint.txt
+            exit_code=${PIPESTATUS[0]}
+            eslint_msg='eslint(eslint.md)'
+
+            if [ $exit_code -ne 0 ]; then
+              echo '`FAIL`' >> eslint.md
+              echo "notify_sign=':warning:'" >> $GITHUB_ENV
+              echo "notify_fail=$notify_fail:$eslint_msg" >> $GITHUB_ENV  
+            else
+              echo '`PASS`' >> eslint.md
+              echo "notify_pass=$notify_pass:$eslint_msg" >> $GITHUB_ENV
+            fi
+          
+            echo "$eslint_msg" >> eslint.md
+            echo '```js' >> eslint.md
+            cat eslint.txt >> eslint.md
+            echo '```' >> eslint.md
+
+            echo $exit_code:$eslint_msg
+            exit $exit_code
+          
+            set +e
+          fi
+
+      - name: prettier project
+        continue-on-error: true
+        run: |
+          if [ "${{ github.event_name }}" != "repository_dispatch" ]; then
+            set -e
+            
+            npx prettier --check . 2>&1 | tee prettier.txt
+            exit_code=${PIPESTATUS[0]}
+            prettier_msg='prettier(prettier.md)'
+
+            if [ $exit_code -ne 0 ]; then
+              echo '`FAIL`' >> pretty.md
+              echo "notify_sign=':warning:'" >> $GITHUB_ENV
+              echo "notify_fail=$notify_fail:$prettier_msg" >> $GITHUB_ENV  
+            else
+              echo '`PASS`' >> prettier.md
+              echo "notify_pass=$notify_pass:$prettier_msg" >> $GITHUB_ENV
+            fi
+          
+            echo "$prettier_msg" >> prettier.md
+            echo '```js' >> prettier.md
+            cat prettier.txt >> prettier.md
+            echo '```' >> prettier.md
+
+            echo $exit_code:$prettier_msg
+            exit $exit_code
+          
+            set +e
+          fi
+
+      ###### Project Dev Build for Unit Testing
+      # Here we may do npm ci with devDependencies to run unit test and test coverage and e2e test
+
+      ###### Project Prod Bui-dispatch ld for e2e Testing
+      # only in case of repository
+      # Here we may do npm ci --omit=dev to run only e2e test
+      # in the future if we want to save time
+    
+      - name: npm prod e2e
+        run: |
+          set -e
+
+          # npm ci --omit=dev is needed here, but playwright dependency is kept in devDependencies
+          npm ci 2>&1 | tee npm-install.txt
+          exit_code=${PIPESTATUS[0]}
+          npm_msg='npm(npm-install.md)'
+
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' >> npm-install.md
+            echo "notify_sign=':x:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$npm_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' >> npm-install.md
+            echo "notify_pass=$notify_pass:$npm_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$npm_msg" >> npm-install.md
+          echo '```js' >> npm-install.md
+          cat npm-install.txt >> npm-install.md
+          echo '```' >> npm-install.md
+
+          echo $exit_code:$npm_msg
+          exit $exit_code
+          
+          set +e
+
+      - name: npm browsers
+        run: |
+          set -e
+        
+          npx playwright install --with-deps | tee npm-install.txt
+          exit_code=${PIPESTATUS[0]}
+          npm_msg='browsers(npm-install.md)'
+
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' >> npm-install.md
+            echo "notify_sign=':x:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$npm_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' >> npm-install.md
+            echo "notify_pass=$notify_pass:$npm_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$npm_msg" >> npm-install.md
+          echo '```js' >> npm-install.md
+          cat npm-install.txt >> npm-install.md
+          echo '```' >> npm-install.md
+
+          echo $exit_code:$npm_msg
+          exit $exit_code
+          
+          set +e
+          
+      ###### Project Build Delivery
+
+      - name: run e2e tests
+        continue-on-error: true
+        env:
+          E2E_GITHUB_URL: ${{ github.event.client_payload.e2e-url }}
+          
+        # run: npm run test:github  # this will take the env url
+        # run: npm run test:prod  # this will e2e https://hivenue.ca/
+        # run: npm run test:dev  # this will e2e https://***.hivenue.ca/
+        # run: npm run test:devops  # this will e2e https://***.hivenue.ca/
+        run: |
+          set -e
+          
+          if [ -z ${{ env.E2E_GITHUB_URL }} ]; then
+            env='prod'
+          else
+            env='github'
+          fi
+
+          npm run test:"$env" 2>&1 | tee e2e-playwright.txt
+          exit_code=${PIPESTATUS[0]}
+          e2e_msg="$env-e2e(e2e-playwright.md)"
+
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' >> e2e-playwright.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$e2e_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' >> e2e-playwright.md
+            echo "notify_pass=$notify_pass:$e2e_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$e2e_msg" >> e2e-playwright.md
+          echo '```js' >> e2e-playwright.md
+          cat e2e-playwright.txt >> e2e-playwright.md
+          echo '```' >> e2e-playwright.md
+
+          echo $exit_code:$e2e_msg
+          exit $exit_code
+          
+          set +e        
+        
+      - name: upload .md reports
+        id: e2e_playwright_reports
+        continue-on-error: true
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e playwright reports
+          path: |  # Required - A file, directory or wildcard pattern that describes what to upload
+            npm-install.md
+            e2e-playwright.md
+            playwright-report/
+            
+          overwrite: true
+          include-hidden-files: true
+
+        # discord webhook: https://discord.com/api/webhooks/***
+      - name: discord notification
+        continue-on-error: true
+        if: always()
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK }} \
+          -H "Content-Type: application/json" \
+          -d '{ "content": "${{ env.notify_sign }} **Workflow:** `${{ github.workflow }}` **Of Repo:** `${{ github.repository }}@${{ github.ref_name }}`\n**Triggered On:** `${{ github.event_name }} **By User:** `${{ github.event.action }}:${{ github.actor }}`\n**Commit Msg:** `${{ env.last_commit }}`\n**Web Report:** `playwright-report/index.html`\n**Pass:** `${{ env.notify_pass }}`\n**Fail:** `${{ env.notify_fail }}`\n**Artifacts:** ${{ steps.e2e_playwright_reports.outputs.artifact-url }} `Expiring in 90 Days`"}'
+          
+        # slack webhook: https://hooks.slack.com/services/***
+      - name: slack notification
+        continue-on-error: true
+        if: always()
+        run: |
+          curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+          -H "Content-Type: application/json" \
+          -d '{ "text": "${{ env.notify_sign }} *Workflow:* `${{ github.workflow }}` *Of Repo:* `${{ github.repository }}@${{ github.ref_name }}`\n*Triggered On:* `${{ github.event_name }}` *By User:* `${{ github.event.action }}:${{ github.actor }}`\n*Commit Msg:* `${{ env.last_commit }}`\n*Web Report:* `playwright-report/index.html`\n*Pass:* `${{ env.notify_pass }}`\n*Fail:* `${{ env.notify_fail }}`\n*Artifacts:* ${{ steps.e2e_playwright_reports.outputs.artifact-url }} `Expiring in 90 Days`" }'

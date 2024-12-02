@@ -1,0 +1,24 @@
+{
+  "name": "hivenue-playwright-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test:dev": "ENV=dev npx playwright test",
+    "test:prod": "ENV=prod npx playwright test",
+    "test:devops": "ENV=devops npx playwright test",
+    "test:github": "E2E_GITHUB_URL=$E2E_GITHUB_URL npx playwright test"
+ 
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.9.1"
+  },
+  "dependencies": {
+    "@types/dotenv": "^8.2.3",
+    "dotenv": "^16.4.5"
+  }
+}

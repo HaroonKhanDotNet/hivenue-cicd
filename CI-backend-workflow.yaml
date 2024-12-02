@@ -1,0 +1,545 @@
+####################################################
+#                                                  #
+#  Project: CI/CD Pipeline                         #
+#  Phase I: Continuous Integration (Unit Testing)  #
+#  Module: Backend (API)                           #
+#  Tech: Github Actions                            #
+#  Client: Hivenue.ca (Nassim, Louenas, Hanson)    #
+#  Author: BTC6 (Alejandro, Jayme, Haroon)         #
+#  Referees: Riipen.com and ICTC BTC               #
+#  Last Update: Sun 2024 Dec 01                    #
+#                                                  #
+####################################################
+
+name: CI-backend-workflow.yaml  # ${{ github.workflow }}
+
+on:  # event triggers
+  workflow_dispatch:   # manual trigger
+  push:  # trigger the workflow when new commit is pushed, including after a merge
+  pull_request:  # run in the source branch context on target branch merge-commit simulation to validate the future merge on target
+    types:  # default pull-request lifecycle types opened, synchronize or reopened PR's
+      - opened  # trigger when a new pull request is created
+      - synchronize  # trigger when commits are added, removed, or updated to an open pull request
+      - reopened  # trigger when a pull-request reopen
+
+jobs:
+
+  ci_backend_job:
+    name: CI backend job
+    
+    # matrix strategy - run the workflow with all available combination of os, nodejs, mongodb versions
+    strategy:
+      matrix:
+        os: 
+          - ubuntu-latest
+          # - windows-latest
+          # - macos-latest
+        nodejs:
+          - 18.***
+          # - 18.x
+          # - 20.x
+          # - 22.x
+        mongodb:
+          - 6.0
+          # - 7.0
+          # - 8.0
+
+    runs-on: ${{ matrix.os }}  # matrix os of the runner (vm)
+
+    # background service container mongodb
+    services:
+      mongo:
+        image: mongo:${{ matrix.mongodb }}  # matrix mongodb version of the background service container
+        env:
+          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.TEST_MONGO_USER }}  # secret to be kept at org
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.TEST_MONGO_PW }}  # secret to be kept at org
+          MONGO_INITDB_DATABASE: ${{ secrets.TEST_MONGO_DB }}  # secret to be kept at org
+        ports: 
+          - '27017:27017'  # mongodb port mapping container:runner
+
+    env:
+      # secret to be constructed inside unit-test project
+      MONGOLAB_URI: mongodb://${{ secrets.TEST_MONGO_USER }}:${{ secrets.TEST_MONGO_PW }}@localhost:27017/${{ secrets.TEST_MONGO_DB }}?authSource=admin
+      
+    steps:
+
+      ###### Project Quality Check
+
+        # constructing notification strings
+      - name: notification init
+        run: | 
+          echo "notify_sign=':white_check_mark:'" >> $GITHUB_ENV
+          echo "notify_fail=':'" >> $GITHUB_ENV
+          echo "notify_pass=':'" >> $GITHUB_ENV
+
+        # check if this branch is mergeable to target branch in case of PR trigger 
+      - name: is PR mergeable
+        id: pr_mergeable
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.event.pull_request.mergeable }}" == "null" ]; then
+            pr_msg='Error: unknown merge status - trigger workflow again'
+            echo "notify_sign=':x:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$pr_msg" >> $GITHUB_ENV
+            
+            echo "$pr_msg"
+            exit 1
+          fi
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.event.pull_request.mergeable }}" == "false" ]; then
+            pr_msg='Error: merge conflict - the PR is not mergeable'
+            echo "notify_sign=':x:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$pr_msg" >> $GITHUB_ENV
+            echo "$pr_msg"
+            exit 1
+          fi
+
+      # get the latest commit from current owner/repository@branch to runner home ${{ GITHUB_WORKSPACE }}
+      - name: checkout backend
+        uses: actions/checkout@v4
+
+      # Hivenue has SNYK Free Account, therefore no SNYK_TOKEN
+      # Once we upgrade to paid subscription, we get token and
+      # put it in secrets and uncomment following action 
+      # - name: Snyk SAST (Static Application Security Test)
+      #   uses: snyk/actions/node@master
+      #   env:
+      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      #   continue-on-error: true
+
+      # getting latest commit message with extended/detailed multiline body
+      - name: get commit message
+        run: echo "last_commit=$(git log -1 --pretty=%B | tr '\n' ' ' | sed 's/[\r]//g; s/%/%%/g; s/["]/\\"/g; s/\n/\\n/g')" >> $GITHUB_ENV
+
+      # install given node runtime version and add it to the runner PATH
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.nodejs }}  # matrix node version
+
+      # check all the dependencies in package-lock.json if they are healthy
+      - name: audit project
+        continue-on-error: true  # continue to next step if fail
+        run: |
+          set +e  # Disable 'exit on error'
+
+          npm audit 2>&1 | tee audit.txt
+          exit_code=${PIPESTATUS[0]}  # Getting exit code of first command in pipe
+          audit_msg='audit(audit.md)'  # message for console-out and notification
+          
+          # Check the exit code and set audit_status accordingly
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > audit.md  # write `FAIL` on top of .md file
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV  # set :warning: sign for slack/discord notification
+            echo "notify_fail=$notify_fail:$audit_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > audit.md
+            echo "notify_pass=$notify_pass:$audit_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$audit_msg" >> audit.md  # append msg string
+          echo '```js' >> audit.md  # write the prefix (```js) to the file npm-audit.md
+          cat audit.txt >> audit.md  # append content of .txt with .md
+          echo '```' >> audit.md  # append the postfix (```) to the end of npm-audit.md
+
+          echo $audit_msg  # Output the audit status for debugging
+          exit $exit_code  # Exit with the same exit code as npm audit
+
+          set -e  # Enable automatic exit on error
+
+      - name: check quality
+        continue-on-error: true
+        run: |
+          set -e
+
+          npm install sanitycheck
+          npx quality 2>&1 | tee quality.txt
+          exit_code=${PIPESTATUS[0]}
+          quality_msg='quality(quality.md)'
+          
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > quality.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$quality_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > quality.md
+            echo "notify_pass=$notify_pass:$quality_msg" >> $GITHUB_ENV
+          fi
+
+          echo "`$quality_msg`" >> quality.md
+          echo '```js' >> quality.md
+          cat quality.txt >> quality.md
+          echo '```' >> quality.md
+
+          echo $quality_msg
+          exit $exit_code
+          
+          set +e
+        
+      - name: lint .env
+        continue-on-error: true
+        run: |
+          set +e
+
+          npx dotenv-linter --recursive 2>&1 | tee dotenv-linter.txt
+          exit_code=${PIPESTATUS[0]}
+          env_msg='env(dotenv-linter.md)'
+          
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > dotenv-linter.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$env_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > dotenv-linter.md
+            echo "notify_pass=$notify_pass:$env_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$env_msg" >> dotenv_linter.md
+          echo '```js' >> dotenv-linter.md
+          cat dotenv-linter.txt >> dotenv-linter.md
+          echo '```' >> dotenv-linter.md  
+
+          echo $env_msg
+          exit $exit_code
+
+          set -e
+                
+      - name: lint package.json
+        continue-on-error: true
+        run: |
+          set +e
+
+          npx jsonlint package.json 2>&1 | tee jsonlint-package.txt
+          exit_code=${PIPESTATUS[0]}
+          lint_msg='packagelint(jsonlint-package.md)'
+          
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > jsonlint-package.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$lint_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > jsonlint-package.md
+            echo "notify_pass=$notify_pass:$lint_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$lint_msg" >> jsonlint-package.md
+          echo '```js' >> jsonlint-package.md
+          cat jsonlint-package.txt >> jsonlint-package.md
+          echo '```' >> jsonlint-package.md
+          
+          echo $lint_msg
+          exit $exit_code
+
+          set -e
+          
+      - name: lint package-lock.json
+        continue-on-error: true
+        run: |
+          set +e
+          
+          npx jsonlint package-lock.json 2>&1 | tee jsonlint-package-lock.txt
+          exit_code=${PIPESTATUS[0]}
+          lint_msg='locklint(jsonlint-package-lock.md)'
+          
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > jsonlint-package-lock.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$lint_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > jsonlint-package-lock.md
+            echo "notify_pass=$notify_pass:$lint_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$lint_msg" >> jsonlint-package-lock.md
+          echo '```js' >> jsonlint-package-lock.md
+          cat jsonlint-package-lock.txt >> jsonlint-package-lock.md
+          echo '```' >> jsonlint-package-lock.md
+
+          echo $lint_msg
+          exit $exit_code
+          
+          set -e
+        
+      - name: check package-lock.json
+        continue-on-error: true
+        run: |
+          set -e
+          
+          npx package-locks-checks 2>&1 | tee package-locks-checks.txt
+          exit_code=${PIPESTATUS[0]}
+          lock_check_msg='lockcheck(package-locks-checks.md)'
+
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > package-locks-checks.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$lock_check_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > package-locks-checks.md
+            echo "notify_pass=$notify_pass:$lock_check_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$lock_check_msg" >> package-locks-checks.md
+          echo '```js' >> package-locks-checks.md
+          cat package-locks-checks.txt >> package-locks-checks.md
+          echo '```' >> package-locks-checks.md
+
+          echo $lock_check_msg
+          exit $exit_code
+          
+          set +e        
+        
+      - name: esLint codebase
+        continue-on-error: true
+        run: |
+          set -e
+          
+          npx eslint . 2>&1 | tee eslint.txt
+          exit_code=${PIPESTATUS[0]}
+          eslint_msg='eslint(eslint.md)'
+          
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > eslint.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$eslint_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > eslint.md
+            echo "notify_pass=$notify_pass:$eslint_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$eslint_msg" >> eslint.md
+          echo '```js' >> eslint.md
+          cat eslint.txt >> eslint.md
+          echo '```' >> eslint.md
+
+          echo $eslint_msg
+          exit $exit_code
+          
+          set +e
+      
+      - name: script prettier:check
+        continue-on-error: true
+        run: |
+          set -e
+
+          npm run prettier:check 2>&1 | tee prettier-check.txt
+          exit_code=${PIPESTATUS[0]}
+          pretty_msg='prettycheck(prettier-check.md)'
+          
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > prettier-check.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$pretty_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > prettier-check.md
+            echo "notify_pass=$notify_pass:$pretty_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$pretty_msg" >> prettier-check.md
+          echo '```js' >> prettier-check.md
+          cat prettier-check.txt >> prettier-check.md
+          echo '```' >> prettier-check.md
+
+          echo $prettier_msg
+          exit $exit_code
+
+          set +e
+
+      - name: script prettier:lint
+        continue-on-error: true
+        run: |
+          set -e
+          
+          npm run prettier:lint 2>&1 | tee prettier-lint.txt
+          exit_code=${PIPESTATUS[0]}
+          pretty_msg='prettylint(prettier-lint.md)'
+
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > prettier-lint.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$pretty_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > prettier-lint.md
+            echo "notify_pass=$notify_pass:$pretty_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$pretty_msg" >> prettier-lint.md
+          echo '```js' >> prettier-lint.md
+          cat prettier-lint.txt >> prettier-lint.md
+          echo '```' >> prettier-lint.md
+
+          echo $pretty_msg
+          exit $exit_code
+
+          set +e
+        
+      - name: lint project
+        continue-on-error: true
+        run: |
+          set -e
+          
+          npx lint 2>&1 | tee lint.txt
+          exit_code=${PIPESTATUS[0]}
+          lint_msg='lint(lint.md)'
+          
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > lint.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$lint_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > lint.md
+            echo "notify_pass=$notify_pass:$lint_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$lint_msg" >> lint.md
+          echo '```js' >> lint.md
+          cat lint.txt >> lint.md
+          echo '```' >> lint.md
+
+          echo $lint_msg
+          exit $exit_code
+
+          set +e
+
+      # commented out because when there is cache present npx quality fail to produce result, might need to chenge npx quality with a better package 
+      # Note: For npm, cache files are stored in ~/.npm on Linux/MacOS, and ~\AppData\npm-cache on Windows
+      # - name: Get npm Cache Path
+      #   id: npm-cache-path   # use this to get npm cache folder ${{ steps.npm-cache-dir.outputs.dir }}
+      #   shell: bash  # to make sure we are not using dash shell
+      #   run: echo "cache_dir=$(npm config get cache)" >> $GITHUB_ENV
+
+      # Note: It is not recommended to cache node_modules, as it can break across Node versions and won't work with npm ci
+      # - name: Setup npm-dependencies Cache
+      #   uses: actions/cache@v4
+      #   id: npm-cache   # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+      #   with:
+      #     path: ${{ env.cache_dir }}
+      #     key: ${{ runner.os }}-hivenue-backend-npm-build-${{ github.ref_name }}-${{ hashFiles('**/package-lock.json') }}
+
+      ###### Project Dev Build for Unit Testing
+  
+      - name: clean-install node Dependencies
+        # Following line is commented out to npm install everytime and generate npm-install.md. If we uncomment the line below we can use cache and skip npm install
+        # if: steps.npm-cache.outputs.cache-hit != 'true'  # Check to see if npm cache is already available or not
+        run: |
+          set -e
+          
+          npm ci --verbose 2>&1 | tee -a npm-install.txt
+          exit_code=${PIPESTATUS[0]}
+          install_msg='npm-ci(npm-install.md)'
+
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > npm-install.md
+            echo "notify_sign=':x:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$install_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > npm-install.md
+            echo "notify_pass=$notify_pass:$install_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$install_msg" >> npm-install.md
+          echo '```js' >> npm-install.md
+          cat npm-install.txt >> npm-install.md
+          echo '```' >> npm-install.md
+          
+          echo $install_msg  # Output the audit status for debugging
+          exit $exit_code  # Exit with the same exit code as npm audit
+
+          set +e
+          
+      - name: unit testing (jest)
+        continue-on-error: true
+        run: |
+          set -e
+          
+          npm run test 2>&1 | tee unit-test.txt
+          exit_code=${PIPESTATUS[0]}
+          unit_msg='unit(unit-test.md)'
+
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > unit-test.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$unit_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > unit-test.md
+            echo "notify_pass=$notify_pass:$unit_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$unit_msg" >> unit-test.md
+          echo '```js' >> unit-test.md
+          cat unit-test.txt >> unit-test.md
+          echo '```' >> unit-test.md
+
+          echo $unit_msg
+          exit $exit_code
+
+          set +e
+
+      - name: test coverage (istanbul)
+        continue-on-error: true
+        run: |
+          set -e
+
+          npm run test:coverage 2>&1 | tee test-coverage.txt
+          exit_code=${PIPESTATUS[0]}
+          cover_msg='coverage(test-coverage.md)'
+
+          if [ $exit_code -ne 0 ]; then
+            echo '`FAIL`' > test-coverage.md
+            echo "notify_sign=':warning:'" >> $GITHUB_ENV
+            echo "notify_fail=$notify_fail:$cover_msg" >> $GITHUB_ENV
+          else
+            echo '`PASS`' > test-coverage.md
+            echo "notify_pass=$notify_pass:$cover_msg" >> $GITHUB_ENV
+          fi
+
+          echo "$cover_msg" >> test-coverage.md
+          echo '```js' >> test-coverage.md
+          cat test-coverage.txt >> test-coverage.md
+          echo '```' >> test-coverage.txt
+
+          echo $cover_msg
+          exit $exit_code
+
+          set +e
+
+      - name: upload .md reports
+        id: CI_backend_reports
+        continue-on-error: true
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CI backend reports
+          path: |  # Required - A file, directory or wildcard pattern that describes what to upload
+            npm-install.md
+            audit.md
+            dotenv-linter.md
+            jsonlint-package.md
+            jsonlint-package-lock.md
+            package-locks-checks.md
+            quality.md
+            eslint.md
+            prettier-check.md
+            lint.md
+            prettier-lint.md
+            unit-test.md
+            test-coverage.md
+            coverage
+            
+          overwrite: true
+          include-hidden-files: true
+
+        # discord webhook: https://discord.com/api/webhooks/***
+      - name: discord notification
+        continue-on-error: true
+        if: always()
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK }} \
+          -H "Content-Type: application/json" \
+          -d '{ "content": "${{ env.notify_sign }} **Workflow:** `${{ github.workflow }}` **Of Repo:** `${{ github.repository }}@${{ github.ref_name }}:$date`\n**Triggered On:** `${{ github.event_name }}` **By User:** `${{ github.actor }}`\n**Commit Msg:** `${{ env.last_commit }}`\n**Web Report:** `coverage/lcov-report/index.html`\n**Pass:** `${{ env.notify_pass }}`\n**Fail:** `${{ env.notify_fail }}`\n**Artifacts:** ${{ steps.CI_backend_reports.outputs.artifact-url }} `Expiring in 90 Days`" }'
+
+        # slack webhook: https://hooks.slack.com/services/***
+      - name: slack notification
+        continue-on-error: true
+        if: always()
+        run: |
+          curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+          -H "Content-Type: application/json" \
+          -d '{ "text": "${{ env.notify_sign }} *Workflow:* `${{ github.workflow }}` *Of Repo:* `${{ github.repository }}@${{ github.ref_name }}`\n*Triggered On:* `${{ github.event_name }}` *By User:* `${{ github.actor }}`\n*Commit Msg:* `${{ env.last_commit }}`\n*Web Report:* `coverage/lcov-report/index.html`\n*Pass:* `${{ env.notify_pass }}`\n*Fail:* `${{ env.notify_fail }}`\n*Artifacts:* ${{ steps.CI_backend_reports.outputs.artifact-url }} `Expiring in 90 Days`" }'
